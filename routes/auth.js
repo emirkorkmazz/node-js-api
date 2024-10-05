@@ -43,19 +43,23 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-  router.get('/user/all', authenticateToken, async (req, res) => {
+  router.post('/user/search', authenticateToken, async (req, res) => { // Değişiklik burada
+    const { page, pageSize } = req.body; // Yeni parametreler alınıyor
+  
     try {
-      const [rows] = await db.execute('SELECT id, username, name, surname, birthdate, city, district, picture FROM users');
-      
+      const [rows] = await db.execute('SELECT id, username, name, surname, birthdate, city, district, picture FROM users LIMIT ?, ?', [(page - 1) * pageSize, pageSize]);
+      const [totalCount] = await db.execute('SELECT COUNT(*) as count FROM users'); // Toplam kullanıcı sayısını al
+  
       res.json({
         status: true,
+        totalCount: totalCount[0].count, // Toplam kullanıcı sayısı
         users: rows
       });
     } catch (error) {
       console.error(error);
       res.status(500).json({ 
         status: false,
-        message: 'Kullanıcı listesi alınırken bir hata oluştu.' 
+        message: 'Kullanıcı arama sırasında bir hata oluştu.' 
       });
     }
   });
@@ -266,6 +270,70 @@ router.post('/user/refresh-token', async (req, res) => {
     res.status(500).json({ 
       status: false,
       message: 'Token yenileme sırasında bir hata oluştu.' 
+    });
+  }
+});
+
+router.post('/user/change-password', authenticateToken, async (req, res) => { // Değişiklik burada
+  const { userId, password, confirmPassword } = req.body;
+  console.log('User ID:', userId);
+  console.log('Token User ID:', req.user.id);
+  // Token ile gelen kullanıcı ID'sini al
+  const tokenUserId = req.user.id;
+
+  // Eğer token'dan gelen userId ile request'teki userId uyumsuzsa hata döndür
+  if (tokenUserId.toString() !== userId) {
+    return res.status(403).json({
+      status: false,
+      message: 'Token ile gelen kullanıcı ID\'si ile verilen kullanıcı ID\'si uyumsuz.'
+    });
+  }
+
+  try {
+    // Kullanıcının mevcut şifresini veritabanından al
+    const [userRows] = await db.execute('SELECT password FROM users WHERE id = ?', [userId]);
+    const user = userRows[0];
+
+    // Eski şifre ile aynı olup olmadığını kontrol et
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+      return res.status(400).json({
+        status: false,
+        message: 'Yeni şifre, mevcut şifre ile aynı olamaz.'
+      });
+    }
+
+    // Şifrelerin eşleşip eşleşmediğini kontrol et
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        status: false,
+        message: 'Şifreler eşleşmiyor.'
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const [result] = await db.execute(
+      `UPDATE users SET password = ? WHERE id = ?`,
+      [hashedPassword, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: false,
+        message: 'Kullanıcı bulunamadı.'
+      });
+    }
+
+    res.json({
+      status: true,
+      message: 'Şifre başarıyla değiştirildi!'
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: 'Şifre değiştirirken bir hata oluştu.'
     });
   }
 });
