@@ -1,10 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../db');
+const db = require('../config/db');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs').promises;
+const { v4: uuidv4 } = require('uuid');
+
 
 
 const router = express.Router();
@@ -41,18 +43,18 @@ const storage = multer.diskStorage({
   }
 });
   
-  const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
-  router.post('/user/search', authenticateToken, async (req, res) => { // Değişiklik burada
-    const { page, pageSize } = req.body; // Yeni parametreler alınıyor
+  const searchUser = async (req, res) => {
+    const { page, pageSize } = req.body;
   
     try {
       const [rows] = await db.execute('SELECT id, username, name, surname, birthdate, city, district, picture FROM users LIMIT ?, ?', [(page - 1) * pageSize, pageSize]);
-      const [totalCount] = await db.execute('SELECT COUNT(*) as count FROM users'); // Toplam kullanıcı sayısını al
+      const [totalCount] = await db.execute('SELECT COUNT(*) as count FROM users');
   
       res.json({
         status: true,
-        totalCount: totalCount[0].count, // Toplam kullanıcı sayısı
+        totalCount: totalCount[0].count, 
         users: rows
       });
     } catch (error) {
@@ -62,34 +64,35 @@ const storage = multer.diskStorage({
         message: 'Kullanıcı arama sırasında bir hata oluştu.' 
       });
     }
-  });
+  };
 
-  router.post('/user/register', async (req, res) => {
-      const { username, password, name} = req.body;
-    
-      try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-    
-        const [result] = await db.execute(
-          `INSERT INTO users (username, password)
-           VALUES (?, ?)`,
-          [username, hashedPassword]
-        );
-    
-        res.json({ 
-          status: true,
-          message: 'Kullanıcı başarıyla kaydedildi!' 
-        });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ 
-          status: false,
-          message: 'Kayıt sırasında bir hata oluştu.' 
-        });
-      }
-    });
+  const registerUser = async (req, res) => {
+    const { username, password, name } = req.body;
+  
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userId = uuidv4();
+  
+      const [result] = await db.execute(
+        `INSERT INTO users (id, username, password)
+         VALUES (?, ?, ?)`,
+        [userId, username, hashedPassword] 
+      );
+  
+      res.json({ 
+        status: true,
+        message: 'Kullanıcı başarıyla kaydedildi!' 
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ 
+        status: false,
+        message: 'Kayıt sırasında bir hata oluştu.' 
+      });
+    }
+  };
 
-router.post('/user/login', async (req, res) => {
+const loginUser = async (req, res) => {
     const { username, password } = req.body;
   
     try {
@@ -112,6 +115,7 @@ router.post('/user/login', async (req, res) => {
       res.json({
         status: true,
         user: {
+          id: user.id,
           username: user.username,
           name: user.name,
           surname: user.surname,
@@ -129,10 +133,10 @@ router.post('/user/login', async (req, res) => {
         message: 'Giriş sırasında bir hata oluştu.' 
       });
     }
-  });
+  };
 
 
-router.post('/user/update', authenticateToken, upload.single('picture'), async (req, res) => {
+const updateUser =  async (req, res) => {
   console.log('Headers:', req.headers);
   console.log('User from token:', req.user);
 
@@ -176,13 +180,14 @@ router.post('/user/update', authenticateToken, upload.single('picture'), async (
     console.error(error);
     res.status(500).json({ message: 'Güncelleme sırasında bir hata oluştu.' });
   }
-});
+};
 
-  router.get('/user/get-user-details', authenticateToken, async (req, res) => {
+
+  const getUserDetails = async (req, res) => {
     try {
       const username = req.user.username;
   
-      const [rows] = await db.execute('SELECT username, name, surname, birthdate, city, district, picture FROM users WHERE username = ?', [username]);
+      const [rows] = await db.execute('SELECT id, username, name, surname, birthdate, city, district, picture FROM users WHERE username = ?', [username]);
       
       if (rows.length === 0) {
         return res.status(404).json({ 
@@ -196,6 +201,7 @@ router.post('/user/update', authenticateToken, upload.single('picture'), async (
       res.json({
         status: true,
         user: {
+          id: user.id,
           username: user.username,
           name: user.name,
           surname: user.surname,
@@ -212,9 +218,9 @@ router.post('/user/update', authenticateToken, upload.single('picture'), async (
         message: 'Kullanıcı bilgileri alınırken bir hata oluştu.' 
       });
     }
-  });
+  };
 
-  router.delete('/user/delete', authenticateToken, async (req, res) => {
+  const deleteUser = async (req, res) => {
     try {
       const username = req.user.username;
   
@@ -249,9 +255,9 @@ router.post('/user/update', authenticateToken, upload.single('picture'), async (
         message: 'Kullanıcı silinirken bir hata oluştu.'
        });
     }
-  });
+  };
 
-router.post('/user/refresh-token', async (req, res) => {
+const refreshToken = async (req, res) => {
   const { token } = req.body;
 
   try {
@@ -272,16 +278,12 @@ router.post('/user/refresh-token', async (req, res) => {
       message: 'Token yenileme sırasında bir hata oluştu.' 
     });
   }
-});
+};
 
-router.post('/user/change-password', authenticateToken, async (req, res) => { // Değişiklik burada
+const changePassword = async (req, res) => {
   const { userId, password, confirmPassword } = req.body;
-  console.log('User ID:', userId);
-  console.log('Token User ID:', req.user.id);
-  // Token ile gelen kullanıcı ID'sini al
   const tokenUserId = req.user.id;
 
-  // Eğer token'dan gelen userId ile request'teki userId uyumsuzsa hata döndür
   if (tokenUserId.toString() !== userId) {
     return res.status(403).json({
       status: false,
@@ -290,11 +292,9 @@ router.post('/user/change-password', authenticateToken, async (req, res) => { //
   }
 
   try {
-    // Kullanıcının mevcut şifresini veritabanından al
     const [userRows] = await db.execute('SELECT password FROM users WHERE id = ?', [userId]);
     const user = userRows[0];
 
-    // Eski şifre ile aynı olup olmadığını kontrol et
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       return res.status(400).json({
@@ -303,7 +303,6 @@ router.post('/user/change-password', authenticateToken, async (req, res) => { //
       });
     }
 
-    // Şifrelerin eşleşip eşleşmediğini kontrol et
     if (password !== confirmPassword) {
       return res.status(400).json({
         status: false,
@@ -336,6 +335,17 @@ router.post('/user/change-password', authenticateToken, async (req, res) => { //
       message: 'Şifre değiştirirken bir hata oluştu.'
     });
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  authenticateToken,
+  upload, 
+  searchUser,
+  registerUser,
+  loginUser,
+  updateUser,
+  getUserDetails,
+  deleteUser,
+  refreshToken,
+  changePassword,
+};
