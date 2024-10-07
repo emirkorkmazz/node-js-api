@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   host: 'localhost',
   user: 'root', // Veritabanı Kullanıcı Adı
   password: '',  // XAMPP kullanıyorsan şifreyi boş bırak
-  database: 'node_js'  // Veritabanı adını burada belirt
+  database: 'lezzet'  // Veritabanı adını burada belirt
 });
 
 module.exports = pool.promise();
