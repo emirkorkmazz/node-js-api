@@ -1291,6 +1291,181 @@
           }
         }
       }
+    },
+    "/api/favorite/add": {
+      "post": {
+        "summary": "Favori restoran ekleme",
+        "tags": ["Favorite"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurant_id"],
+                "properties": {
+                  "restaurant_id": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Restoran başarıyla favorilere eklendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Restoran favorilere eklendi!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkilendirme başarısız: Token bulunamadı"
+          },
+          "500": {
+            "description": "Favori eklenirken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/favorite": {
+      "get": {
+        "summary": "Kullanıcının favori restoranlarını listeleme",
+        "tags": ["Favorite"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favori restoranlar başarıyla getirildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "favorites": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1a2b3c4d"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
+                          },
+                          "restaurant_id": {
+                            "type": "string",
+                            "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-10-01T12:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkilendirme başarısız: Token bulunamadı"
+          },
+          "500": {
+            "description": "Favoriler alınırken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/favorite/remove": {
+      "delete": {
+        "summary": "Favori restoranı kaldırma",
+        "tags": ["Favorite"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["favorite_id"],
+                "properties": {
+                  "favorite_id": {
+                    "type": "string",
+                    "example": "1a2b3c4d"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Favori başarıyla kaldırıldı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Favori başarıyla kaldırıldı."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkilendirme başarısız: Token bulunamadı"
+          },
+          "404": {
+            "description": "Favori bulunamadı"
+          },
+          "500": {
+            "description": "Favori kaldırılırken bir hata oluştu"
+          }
+        }
+      }
     }
   }
 }
