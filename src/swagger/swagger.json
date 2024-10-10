@@ -676,6 +676,22 @@
                     "type": "string",
                     "format": "binary",
                     "description": "Restoran logosu"
+                  },
+                  "city": {
+                    "type": "string",
+                    "example": "İstanbul"
+                  },
+                  "district": {
+                    "type": "string",
+                    "example": "Kadıköy"
+                  },
+                  "latitude": {
+                    "type": "number",
+                    "example": 40.123456
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "example": 29.123456
                   }
                 }
               }
@@ -756,6 +772,22 @@
                     "type": "string",
                     "format": "binary",
                     "description": "Restoran logosu"
+                  },
+                  "city": {
+                    "type": "string",
+                    "example": "İstanbul"
+                  },
+                  "district": {
+                    "type": "string",
+                    "example": "Kadıköy"
+                  },
+                  "latitude": {
+                    "type": "number",
+                    "example": 40.123456
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "example": 29.123456
                   }
                 }
               }
@@ -1041,6 +1073,221 @@
           },
           "500": {
             "description": "Restoran onaylanırken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/review/add": {
+      "post": {
+        "summary": "Yorum ekleme",
+        "tags": ["Review"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurant_id", "rating", "comment"],
+                "properties": {
+                  "restaurant_id": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  },
+                  "rating": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "comment": {
+                    "type": "string",
+                    "example": "Harika bir deneyim!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Yorum başarıyla eklendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Yorum başarıyla eklendi!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkilendirme başarısız: Token bulunamadı"
+          },
+          "500": {
+            "description": "Yorum eklenirken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/review/reply": {
+      "post": {
+        "summary": "Yoruma yanıt verme",
+        "tags": ["Review"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["review_id", "reply"],
+                "properties": {
+                  "review_id": {
+                    "type": "string",
+                    "example": "1a2b3c4d"
+                  },
+                  "reply": {
+                    "type": "string",
+                    "example": "Teşekkür ederiz, geri bildiriminiz bizim için önemli!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Yoruma başarıyla yanıt verildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Yoruma cevap başarıyla eklendi."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Bu yoruma cevap vermek için yetkiniz yok"
+          },
+          "500": {
+            "description": "Cevap eklenirken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/review/restaurant": {
+      "post": {
+        "summary": "Belirli bir restorana yapılan yorumları listeleme",
+        "tags": ["Review"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurant_id"],
+                "properties": {
+                  "restaurant_id": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  },
+                  "page": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "example": 20
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Yorumlar başarıyla getirildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "example": 100
+                    },
+                    "reviews": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1a2b3c4d"
+                          },
+                          "user_id": {
+                            "type": "string",
+                            "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
+                          },
+                          "restaurant_id": {
+                            "type": "string",
+                            "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                          },
+                          "rating": {
+                            "type": "integer",
+                            "example": 5
+                          },
+                          "comment": {
+                            "type": "string",
+                            "example": "Harika bir deneyim!"
+                          },
+                          "reply": {
+                            "type": "string",
+                            "example": "Teşekkür ederiz!"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Restoran bulunamadı"
+          },
+          "500": {
+            "description": "Yorumlar alınırken bir hata oluştu"
           }
         }
       }

@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const addRestaurant = async (req, res) => {
-  const { name, address, contact_info, menu } = req.body;
+  const { name, address, contact_info, menu, city, district, latitude, longitude } = req.body;
 
   try {
     const restaurantId = uuidv4();
@@ -37,9 +37,9 @@ const addRestaurant = async (req, res) => {
     }
 
     await db.execute(
-      `INSERT INTO Restaurants (id, name, address, contact_info, menu, logo_url, owner_id, is_approved)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [restaurantId, name, address, contact_info, menu, logoPath, ownerId, isApproved]
+      `INSERT INTO Restaurants (id, name, address, contact_info, menu, logo_url, owner_id, is_approved, city, district, latitude, longitude)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [restaurantId, name, address, contact_info, menu, logoPath, ownerId, isApproved, city, district, latitude, longitude]
     );
 
     res.json({
@@ -58,7 +58,7 @@ const addRestaurant = async (req, res) => {
 
 
 const updateRestaurant = async (req, res) => {
-  const { id, name, address, contact_info, menu } = req.body;
+  const { id, name, address, contact_info, menu, city, district, latitude, longitude } = req.body;
   const ownerId = req.user.id;
 
   try {
@@ -76,8 +76,8 @@ const updateRestaurant = async (req, res) => {
     }
 
     await db.execute(
-      `UPDATE Restaurants SET name = ?, address = ?, contact_info = ?, menu = ?, logo_url = ? WHERE id = ?`,
-      [name || rows[0].name, address || rows[0].address, contact_info || rows[0].contact_info, menu || rows[0].menu, logoPath, id]
+      `UPDATE Restaurants SET name = ?, address = ?, contact_info = ?, menu = ?, logo_url = ?, city = ?, district = ?, latitude = ?, longitude = ? WHERE id = ?`,
+      [name || rows[0].name, address || rows[0].address, contact_info || rows[0].contact_info, menu || rows[0].menu, logoPath, city || rows[0].city, district || rows[0].district, latitude || rows[0].latitude, longitude || rows[0].longitude, id]
     );
 
     res.json({
