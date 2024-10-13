@@ -958,10 +958,44 @@
         }
       }
     },
-    "/api/restaurant/": {
-      "get": {
+    "/api/restaurant/list": {
+      "post": {
         "summary": "Onaylanmış restoranları listeleme",
         "tags": ["Restaurant"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["page", "pageSize"],
+                "properties": {
+                  "page": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "pageSize": {
+                    "type": "integer",
+                    "example": 10
+                  },
+                  "city": {
+                    "type": "string",
+                    "example": "İstanbul"
+                  },
+                  "district": {
+                    "type": "string",
+                    "example": "Kadıköy"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Onaylanmış restoranlar başarıyla listelendi",
@@ -973,6 +1007,10 @@
                     "status": {
                       "type": "boolean",
                       "example": true
+                    },
+                    "totalCount": {
+                      "type": "integer",
+                      "example": 95
                     },
                     "restaurants": {
                       "type": "array",
@@ -1463,6 +1501,181 @@
           },
           "500": {
             "description": "Favori kaldırılırken bir hata oluştu"
+          }
+        }
+      }
+    },
+    "/api/photo/delete": {
+      "delete": {
+        "summary": "Restoran fotoğrafını silme",
+        "tags": ["Photo"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "example": "1a2b3c4d"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fotoğraf başarıyla silindi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fotoğraf başarıyla silindi!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fotoğraf bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fotoğraf bulunamadı."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Bu restorana fotoğraf silme yetkiniz yok.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Bu restorana fotoğraf silme yetkiniz yok."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Fotoğraf silinirken bir hata oluştu",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fotoğraf silinirken bir hata oluştu."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/photo/add": {
+      "post": {
+        "summary": "Restorana fotoğraf ekleme",
+        "tags": ["Photo"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurant_id", "photo"],
+                "properties": {
+                  "restaurant_id": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Restoran fotoğrafı, dosya olarak gönderilir."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fotoğraf başarıyla eklendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fotoğraf başarıyla eklendi!"
+                    },
+                    "photoUrl": {
+                      "type": "string",
+                      "example": "images/restaurants-pictures/photo.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Bu restorana fotoğraf ekleme yetkiniz yok."
+          },
+          "500": {
+            "description": "Fotoğraf eklenirken bir hata oluştu"
           }
         }
       }

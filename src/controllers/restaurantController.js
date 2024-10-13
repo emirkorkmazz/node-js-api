@@ -130,18 +130,21 @@ const getRestaurantById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.execute('SELECT * FROM Restaurants WHERE id = ?', [id]);
+    const [restaurantRows] = await db.execute('SELECT * FROM Restaurants WHERE id = ?', [id]);
 
-    if (rows.length === 0) {
+    if (restaurantRows.length === 0) {
       return res.status(404).json({
         status: false,
         message: 'Restoran bulunamadı.'
       });
     }
 
+    const [photoRows] = await db.execute('SELECT photo_url FROM Restaurant_Photos WHERE restaurant_id = ?', [id]);
+
     res.json({
       status: true,
-      restaurant: rows[0]
+      restaurant: restaurantRows[0],
+      photos: photoRows.map(photo => photo.photo_url)
     });
   } catch (error) {
     console.error(error);
@@ -153,12 +156,42 @@ const getRestaurantById = async (req, res) => {
 };
 
 
+
 const listApprovedRestaurants = async (req, res) => {
+  const { page, pageSize, city, district } = req.body;
+
+  if (!page || !pageSize) {
+    return res.status(400).json({
+      status: false,
+      message: 'Page ve PageSize zorunludur.'
+    });
+  }
+
+  const offset = (page - 1) * pageSize;
+  let query = 'SELECT * FROM Restaurants WHERE is_approved = true';
+  const params = [];
+
+  if (city) {
+    query += ' AND city = ?';
+    params.push(city);
+  }
+  if (district) {
+    query += ' AND district = ?';
+    params.push(district);
+  }
+
+  const [totalCountRows] = await db.execute('SELECT COUNT(*) as totalCount FROM Restaurants WHERE is_approved = true' + (city ? ' AND city = ?' : '') + (district ? ' AND district = ?' : ''), params);
+  const totalCount = totalCountRows[0].totalCount;
+
+  query += ' LIMIT ? OFFSET ?';
+  params.push(pageSize, offset);
+
   try {
-    const [rows] = await db.execute('SELECT * FROM Restaurants WHERE is_approved = true');
+    const [rows] = await db.execute(query, params);
 
     res.json({
       status: true,
+      totalCount: totalCount,
       restaurants: rows
     });
   } catch (error) {

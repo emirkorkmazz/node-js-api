@@ -12,7 +12,7 @@ router.delete('/restaurant/delete', authenticateToken, restaurantController.dele
 
 router.get('/restaurant/:id', restaurantController.getRestaurantById);
 
-router.get('/restaurant/', restaurantController.listApprovedRestaurants);
+router.post('/restaurant/list', restaurantController.listApprovedRestaurants);
 
 router.post('/restaurant/approve', authenticateToken, restaurantController.approveRestaurant);
 
