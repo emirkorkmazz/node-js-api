@@ -10,16 +10,18 @@ const reviewsRoutes = require('./routes/reviewsRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const photoRoutes = require('./routes/photoRoutes');
 const app = express();
+const path = require('path');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
+const imagesPath = path.join(__dirname, '..', 'images');
+app.use('/images', express.static(imagesPath));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 app.use('/api', authRoutes, userRoutes, restaurantRoutes, reviewsRoutes, favoriteRoutes, photoRoutes);
 
 const PORT = process.env.PORT || 3000;
