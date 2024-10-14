@@ -125,7 +125,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password", "name", "phone_number"],
+                "required": ["email", "password", "name", "surname", "phone_number", "role"],
                 "properties": {
                   "email": {
                     "type": "string",
@@ -139,9 +139,18 @@
                     "type": "string",
                     "example": "Ahmet"
                   },
+                  "surname": {
+                    "type": "string",
+                    "example": "Yılmaz"
+                  },
                   "phone_number": {
                     "type": "string",
                     "example": "+905555555555"
+                  },
+                  "role": {
+                    "type": "string",
+                    "example": "User",
+                    "enum": ["User", "BusinessOwner", "Admin"]
                   }
                 }
               }
@@ -306,104 +315,84 @@
         }
       }
     },
-   "/api/user/update": {
-  "post": {
-    "summary": "Kullanıcı bilgilerini güncelle",
-    "tags": ["User"],
-    "security": [
-      {
-        "bearerAuth": []
-      }
-    ],
-    "requestBody": {
-      "required": true,
-      "content": {
-        "multipart/form-data": {
-          "schema": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "example": "Ahmet"
-              },
-              "phone_number": {
-                "type": "string",
-                "example": "+905555555555"
-              },
-              "email": {
-                "type": "string",
-                "example": "ahmet@example.com",
-                "readOnly": true,
-                "description": "Email alanı sabit, değiştirilemez."
-              },
-              "picture": {
-                "type": "string",
-                "format": "binary",
-                "description": "Kullanıcının profil resmi, dosya olarak gönderilir. Dosya adı email'in ilk kısmına göre adlandırılacaktır."
+    "/api/user/update": {
+      "post": {
+        "summary": "Kullanıcı bilgilerini güncelle",
+        "tags": ["User"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Ahmet"
+                  },
+                  "surname": {
+                    "type": "string",
+                    "example": "Yılmaz"
+                  },
+                  "phone_number": {
+                    "type": "string",
+                    "example": "+905555555555"
+                  },
+                  "picture": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Kullanıcının profil resmi, dosya olarak gönderilir."
+                  }
+                }
               }
             }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kullanıcı bilgileri başarıyla güncellendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Kullanıcı bilgileri başarıyla güncellendi!"
+                    },
+                    "picturePath": {
+                      "type": "string",
+                      "example": "images/profile-pictures/ahmet.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkilendirme başarısız: Token bulunamadı"
+          },
+          "403": {
+            "description": "Yetkilendirme başarısız: Geçersiz token"
+          },
+          "404": {
+            "description": "Kullanıcı bulunamadı"
+          },
+          "500": {
+            "description": "Sunucu hatası"
           }
         }
       }
     },
-    "responses": {
-      "200": {
-        "description": "Kullanıcı bilgileri başarıyla güncellendi",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Kullanıcı bilgileri başarıyla güncellendi!"
-                },
-                "picturePath": {
-                  "type": "string",
-                  "example": "images/ahmet.jpg",
-                  "description": "Profil resmi yolu."
-                }
-              }
-            }
-          }
-        }
-      },
-      "401": {
-        "description": "Yetkilendirme başarısız: Token bulunamadı"
-      },
-      "403": {
-        "description": "Yetkilendirme başarısız: Geçersiz token"
-      },
-      "404": {
-        "description": "Kullanıcı bulunamadı"
-      },
-      "500": {
-        "description": "Sunucu hatası",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": false
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Güncelleme sırasında bir hata oluştu."
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-},
     "/api/user/get-user-details": {
       "get": {
         "summary": "Kullanıcı detaylarını getir",
@@ -436,6 +425,10 @@
                           "type": "string",
                           "example": "Ahmet"
                         },
+                        "surname": {
+                          "type": "string",
+                          "example": "Yılmaz"
+                        },
                         "email": {
                           "type": "string",
                           "example": "ahmet@example.com"
@@ -451,6 +444,10 @@
                         "is_verified": {
                           "type": "boolean",
                           "example": true
+                        },
+                        "picture": {
+                          "type": "string",
+                          "example": "images/profile-pictures/ahmet.jpg"
                         }
                       }
                     }

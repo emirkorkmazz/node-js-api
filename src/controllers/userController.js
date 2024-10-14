@@ -76,15 +76,15 @@ const authenticateToken = (req, res, next) => {
   };
 
   const registerUser = async (req, res) => {
-    const { username, password, name, email, phone_number } = req.body;
+    const { password, name, surname, email, phone_number, role } = req.body;
   
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const userId = uuidv4();
   
       await db.execute(
-        'INSERT INTO Users (id, name, email, password_hash, phone_number) VALUES (?, ?, ?, ?, ?)', 
-        [userId, name, email, hashedPassword, phone_number]
+        'INSERT INTO Users (id, name, surname, email, password_hash, phone_number, role) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+        [userId, name, surname, email, hashedPassword, phone_number, role]
       );
   
       res.json({ 
@@ -101,7 +101,7 @@ const authenticateToken = (req, res, next) => {
   };
 
   const updateUser = async (req, res) => {
-    const { name, phone_number } = req.body;
+    const { name, surname, phone_number } = req.body;
     let picturePath = null;
   
     try {
@@ -121,12 +121,13 @@ const authenticateToken = (req, res, next) => {
       }
   
       const newName = name || existingUser.name;
+      const newSurname = surname || existingUser.surname;
       const newPhoneNumber = phone_number || existingUser.phone_number;
       const newPicture = picturePath || existingUser.picture;
   
       const [result] = await db.execute(
-        'UPDATE Users SET name = ?, phone_number = ?, picture = ? WHERE id = ?',
-        [newName, newPhoneNumber, newPicture, req.user.id]
+        'UPDATE Users SET name = ?, surname = ?, phone_number = ?, picture = ? WHERE id = ?',
+        [newName, newSurname, newPhoneNumber, newPicture, req.user.id]
       );
   
       if (result.affectedRows === 0) {
@@ -153,7 +154,7 @@ const authenticateToken = (req, res, next) => {
       const userId = req.user.id;
   
       const [rows] = await db.execute(
-        'SELECT id, name, email, phone_number, role, is_verified, picture FROM Users WHERE id = ?', 
+        'SELECT id, name, surname, email, phone_number, role, is_verified, picture FROM Users WHERE id = ?', 
         [userId]
       );
   
@@ -171,6 +172,7 @@ const authenticateToken = (req, res, next) => {
         user: {
           id: user.id,
           name: user.name,
+          surname: user.surname,
           email: user.email,
           phone_number: user.phone_number,
           role: user.role,
