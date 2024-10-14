@@ -25,8 +25,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', authRoutes, userRoutes, restaurantRoutes, reviewsRoutes, favoriteRoutes, photoRoutes);
 
 const PORT = process.env.PORT || 3000;
-console.log(process.env.PORT);
 app.listen(PORT, () => {
-  console.log(`Sunucu çalışıyor: http://localhost:${PORT}`);
-  console.log(`Swagger dokümantasyonu: http://localhost:${PORT}/api-docs`);
+  console.log(`Sunucu çalışıyor: ${process.env.API_URL}:${PORT}`);
+  console.log(`Swagger dokümantasyonu: ${process.env.API_URL}:${PORT}/api-docs`);
 });

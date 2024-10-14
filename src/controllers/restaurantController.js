@@ -125,7 +125,6 @@ const deleteRestaurant = async (req, res) => {
   }
 };
 
-
 const getRestaurantById = async (req, res) => {
   const { id } = req.params;
 
@@ -140,10 +139,17 @@ const getRestaurantById = async (req, res) => {
     }
 
     const [photoRows] = await db.execute('SELECT photo_url FROM Restaurant_Photos WHERE restaurant_id = ?', [id]);
+    
+    // Favori sayısını al
+    const [favoriteCountRows] = await db.execute('SELECT COUNT(*) as favoriteCount FROM Favorites WHERE restaurant_id = ?', [id]);
+    const favoriteCount = favoriteCountRows[0].favoriteCount;
 
     res.json({
       status: true,
-      restaurant: restaurantRows[0],
+      restaurant: {
+        ...restaurantRows[0],
+        favoriteCount: favoriteCount
+      },
       photos: photoRows.map(photo => photo.photo_url)
     });
   } catch (error) {
@@ -154,8 +160,6 @@ const getRestaurantById = async (req, res) => {
     });
   }
 };
-
-
 
 const listApprovedRestaurants = async (req, res) => {
   const { page, pageSize, city, district } = req.body;
@@ -168,17 +172,24 @@ const listApprovedRestaurants = async (req, res) => {
   }
 
   const offset = (page - 1) * pageSize;
-  let query = 'SELECT * FROM Restaurants WHERE is_approved = true';
+  let query = `
+    SELECT r.*, COUNT(f.id) as favoriteCount 
+    FROM Restaurants r 
+    LEFT JOIN Favorites f ON r.id = f.restaurant_id 
+    WHERE r.is_approved = true
+  `;
   const params = [];
 
   if (city) {
-    query += ' AND city = ?';
+    query += ' AND r.city = ?';
     params.push(city);
   }
   if (district) {
-    query += ' AND district = ?';
+    query += ' AND r.district = ?';
     params.push(district);
   }
+
+  query += ' GROUP BY r.id';
 
   const [totalCountRows] = await db.execute('SELECT COUNT(*) as totalCount FROM Restaurants WHERE is_approved = true' + (city ? ' AND city = ?' : '') + (district ? ' AND district = ?' : ''), params);
   const totalCount = totalCountRows[0].totalCount;
