@@ -11,7 +11,7 @@ const authenticateToken = require('../middleware/authenticateToken');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'images/restaurants-pictures/');
+    cb(null, 'images/restaurants-logos/');
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const addRestaurant = async (req, res) => {
-  const { name, address, contact_info, menu, city, district, latitude, longitude } = req.body;
+  const { name, address, contact_info, menu, city, district, latitude, longitude, logoBase64 } = req.body; // logoBase64 ekleniyor
 
   try {
     const restaurantId = uuidv4();
@@ -32,8 +32,11 @@ const addRestaurant = async (req, res) => {
     const isApproved = req.user.role === 'BusinessOwner' ? true : false;
 
     let logoPath = null;
-    if (req.file) {
-      logoPath = `images/restaurants-pictures/${req.file.filename}`;
+    if (logoBase64) {
+      const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, 'base64');
+      logoPath = `images/restaurants-logos/${restaurantId}.png`;
+      await fs.writeFile(logoPath, buffer);
     }
 
     await db.execute(
@@ -58,7 +61,7 @@ const addRestaurant = async (req, res) => {
 
 
 const updateRestaurant = async (req, res) => {
-  const { id, name, address, contact_info, menu, city, district, latitude, longitude } = req.body;
+  const { id, name, address, contact_info, menu, city, district, latitude, longitude, logoBase64 } = req.body; // logoBase64 ekleniyor
   const ownerId = req.user.id;
 
   try {
@@ -71,8 +74,11 @@ const updateRestaurant = async (req, res) => {
     }
 
     let logoPath = rows[0].logo_url;
-    if (req.file) {
-      logoPath = `images/restaurants-pictures/${req.file.filename}`;
+    if (logoBase64) {
+      const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, 'base64');
+      logoPath = `images/restaurants-logos/${id}.png`;
+      await fs.writeFile(logoPath, buffer);
     }
 
     await db.execute(

@@ -649,7 +649,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -669,10 +669,9 @@
                     "type": "string",
                     "example": "Menü bilgileri burada yer alır."
                   },
-                  "logo": {
+                  "logoBase64": {
                     "type": "string",
-                    "format": "binary",
-                    "description": "Restoran logosu"
+                    "description": "Restoran logosu, base64 formatında"
                   },
                   "city": {
                     "type": "string",
@@ -741,7 +740,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -765,10 +764,9 @@
                     "type": "string",
                     "example": "Güncellenmiş menü bilgileri burada yer alır."
                   },
-                  "logo": {
+                  "logoBase64": {
                     "type": "string",
-                    "format": "binary",
-                    "description": "Restoran logosu"
+                    "description": "Restoran logosu, base64 formatında"
                   },
                   "city": {
                     "type": "string",
@@ -1502,6 +1500,76 @@
         }
       }
     },
+    "/api/photo/add": {
+      "post": {
+        "summary": "Restorana fotoğraf ekleme",
+        "tags": ["Photo"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurant_id", "photosBase64"],
+                "properties": {
+                  "restaurant_id": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  },
+                  "photosBase64": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "description": "Restoran fotoğrafı, base64 formatında"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fotoğraflar başarıyla eklendi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fotoğraflar başarıyla eklendi!"
+                    },
+                    "photoUrls": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "images/restaurants-pictures/photo.jpg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Bu restorana fotoğraf ekleme yetkiniz yok."
+          },
+          "500": {
+            "description": "Fotoğraflar eklenirken bir hata oluştu"
+          }
+        }
+      }
+    },
     "/api/photo/delete": {
       "delete": {
         "summary": "Restoran fotoğrafını silme",
@@ -1611,71 +1679,7 @@
           }
         }
       }
-    },
-    "/api/photo/add": {
-      "post": {
-        "summary": "Restorana fotoğraf ekleme",
-        "tags": ["Photo"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "required": ["restaurant_id", "photo"],
-                "properties": {
-                  "restaurant_id": {
-                    "type": "string",
-                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
-                  },
-                  "photo": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "Restoran fotoğrafı, dosya olarak gönderilir."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Fotoğraf başarıyla eklendi",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Fotoğraf başarıyla eklendi!"
-                    },
-                    "photoUrl": {
-                      "type": "string",
-                      "example": "images/restaurants-pictures/photo.jpg"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Bu restorana fotoğraf ekleme yetkiniz yok."
-          },
-          "500": {
-            "description": "Fotoğraf eklenirken bir hata oluştu"
-          }
-        }
-      }
     }
+   
   }
 }

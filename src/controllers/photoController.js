@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const addRestaurantPhoto = async (req, res) => {
-  const { restaurant_id } = req.body;
+  const { restaurant_id, photosBase64 } = req.body;
   const ownerId = req.user.id;
 
   try {
@@ -34,37 +34,40 @@ const addRestaurantPhoto = async (req, res) => {
     const [photoCountRows] = await db.execute('SELECT COUNT(*) as count FROM Restaurant_Photos WHERE restaurant_id = ?', [restaurant_id]);
     const photoCount = photoCountRows[0].count;
 
-    if (photoCount >= 3) {
-      if (req.file && req.file.path) {
-        await fs.unlink(req.file.path);
-      }
+    if (photoCount + photosBase64.length > 3) {
       return res.status(400).json({
         status: false,
         message: 'Bu restorana en fazla 3 fotoğraf ekleyebilirsiniz.'
       });
     }
 
-    const photoUrl = `images/restaurants-pictures/${req.file.filename}`;
-    const photoId = uuidv4();
+    const photoUrls = [];
+    for (const photoBase64 of photosBase64) {
+      const base64Data = photoBase64.replace(/^data:image\/\w+;base64,/, "");
+      const photoId = uuidv4();
+      const photoUrl = `images/restaurants-pictures/${photoId}.png`;
+      const buffer = Buffer.from(base64Data, 'base64');
+      await fs.writeFile(photoUrl, buffer);
+      photoUrls.push(photoUrl);
+    }
 
-    await db.execute(
-      'INSERT INTO Restaurant_Photos (id, restaurant_id, photo_url) VALUES (?, ?, ?)',
-      [photoId, restaurant_id, photoUrl]
-    );
+    for (const photoUrl of photoUrls) {
+      await db.execute(
+        'INSERT INTO Restaurant_Photos (id, restaurant_id, photo_url) VALUES (?, ?, ?)',
+        [uuidv4(), restaurant_id, photoUrl]
+      );
+    }
 
     res.json({
       status: true,
-      message: 'Fotoğraf başarıyla eklendi!',
-      photoUrl
+      message: 'Fotoğraflar başarıyla eklendi!',
+      photoUrls
     });
   } catch (error) {
     console.error(error);
-    if (req.file && req.file.path) {
-      await fs.unlink(req.file.path);
-    }
     res.status(500).json({
       status: false,
-      message: 'Fotoğraf eklenirken bir hata oluştu.'
+      message: 'Fotoğraflar eklenirken bir hata oluştu.'
     });
   }
 };

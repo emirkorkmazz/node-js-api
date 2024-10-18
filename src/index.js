@@ -18,8 +18,8 @@ dotenv.config();
 const imagesPath = path.join(__dirname, '..', 'images');
 app.use('/images', express.static(imagesPath));
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api', authRoutes, userRoutes, restaurantRoutes, reviewsRoutes, favoriteRoutes, photoRoutes);
