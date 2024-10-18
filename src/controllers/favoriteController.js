@@ -3,15 +3,15 @@ const { v4: uuidv4 } = require('uuid');
 
 
 const addFavorite = async (req, res) => {
-    const { restaurant_id } = req.body;
+    const { restaurantId } = req.body;
     const userId = req.user.id;
     const favoriteId = uuidv4();
 
     try {
         await db.execute(
-            `INSERT INTO Favorites (id, user_id, restaurant_id) 
+            `INSERT INTO Favorites (id, userId, restaurantId) 
              VALUES (?, ?, ?)`,
-            [favoriteId, userId, restaurant_id]
+            [favoriteId, userId, restaurantId]
         );
 
         res.json({
@@ -35,8 +35,8 @@ const getFavorites = async (req, res) => {
         const [rows] = await db.execute(
             `SELECT f.*, r.name AS restaurant_name
              FROM Favorites f
-             JOIN Restaurants r ON f.restaurant_id = r.id
-             WHERE f.user_id = ?`,
+             JOIN Restaurants r ON f.restaurantId = r.id
+             WHERE f.userId = ?`,
             [userId]
         );
 
@@ -61,7 +61,7 @@ const removeFavorite = async (req, res) => {
     try {
         const result = await db.execute(
             `DELETE FROM Favorites 
-             WHERE id = ? AND user_id = ?`,
+             WHERE id = ? AND userId = ?`,
             [favorite_id, userId]
         );
 

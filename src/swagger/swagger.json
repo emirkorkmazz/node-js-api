@@ -83,7 +83,7 @@
                             "type": "string",
                             "example": "ahmet@example.com"
                           },
-                          "phone_number": {
+                          "phoneNumber": {
                             "type": "string",
                             "example": "+905555555555"
                           },
@@ -91,7 +91,7 @@
                             "type": "string",
                             "example": "User"
                           },
-                          "is_verified": {
+                          "isVerified": {
                             "type": "boolean",
                             "example": true
                           }
@@ -125,7 +125,7 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["email", "password", "name", "surname", "phone_number", "role"],
+                "required": ["email", "password", "name", "surname", "phoneNumber", "role"],
                 "properties": {
                   "email": {
                     "type": "string",
@@ -143,7 +143,7 @@
                     "type": "string",
                     "example": "Yılmaz"
                   },
-                  "phone_number": {
+                  "phoneNumber": {
                     "type": "string",
                     "example": "+905555555555"
                   },
@@ -253,7 +253,7 @@
                           "type": "string",
                           "example": "Ahmet"
                         },
-                        "phone_number": {
+                        "phoneNumber": {
                           "type": "string",
                           "example": "+905555555555"
                         },
@@ -261,7 +261,7 @@
                           "type": "string",
                           "example": "User"
                         },
-                        "is_verified": {
+                        "isVerified": {
                           "type": "boolean",
                           "example": true
                         }
@@ -339,7 +339,7 @@
                     "type": "string",
                     "example": "Yılmaz"
                   },
-                  "phone_number": {
+                  "phoneNumber": {
                     "type": "string",
                     "example": "+905555555555"
                   },
@@ -433,7 +433,7 @@
                           "type": "string",
                           "example": "ahmet@example.com"
                         },
-                        "phone_number": {
+                        "phoneNumber": {
                           "type": "string",
                           "example": "+905555555555"
                         },
@@ -441,7 +441,7 @@
                           "type": "string",
                           "example": "User"
                         },
-                        "is_verified": {
+                        "isVerified": {
                           "type": "boolean",
                           "example": true
                         },
@@ -661,7 +661,7 @@
                     "type": "string",
                     "example": "İstanbul, Türkiye"
                   },
-                  "contact_info": {
+                  "contact": {
                     "type": "string",
                     "example": "+905555555555"
                   },
@@ -756,7 +756,7 @@
                     "type": "string",
                     "example": "İstanbul, Türkiye"
                   },
-                  "contact_info": {
+                  "contact": {
                     "type": "string",
                     "example": "+905555555555"
                   },
@@ -917,7 +917,7 @@
                           "type": "string",
                           "example": "İstanbul, Türkiye"
                         },
-                        "contact_info": {
+                        "contact": {
                           "type": "string",
                           "example": "+905555555555"
                         },
@@ -925,11 +925,11 @@
                           "type": "string",
                           "example": "Menü bilgileri burada yer alır."
                         },
-                        "logo_url": {
+                        "logoUrl": {
                           "type": "string",
                           "example": "images/restaurants/logo.jpg"
                         },
-                        "owner_id": {
+                        "ownerId": {
                           "type": "string",
                           "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
                         },
@@ -1024,7 +1024,7 @@
                             "type": "string",
                             "example": "İstanbul, Türkiye"
                           },
-                          "contact_info": {
+                          "contact": {
                             "type": "string",
                             "example": "+905555555555"
                           },
@@ -1032,11 +1032,11 @@
                             "type": "string",
                             "example": "Menü bilgileri burada yer alır."
                           },
-                          "logo_url": {
+                          "logoUrl": {
                             "type": "string",
                             "example": "images/restaurants/logo.jpg"
                           },
-                          "owner_id": {
+                          "ownerId": {
                             "type": "string",
                             "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
                           },
@@ -1125,9 +1125,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["restaurant_id", "rating", "comment"],
+                "required": ["restaurantId", "rating", "comment"],
                 "properties": {
-                  "restaurant_id": {
+                  "restaurantId": {
                     "type": "string",
                     "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                   },
@@ -1189,9 +1189,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["review_id", "reply"],
+                "required": ["reviewId", "reply"],
                 "properties": {
-                  "review_id": {
+                  "reviewId": {
                     "type": "string",
                     "example": "1a2b3c4d"
                   },
@@ -1244,9 +1244,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["restaurant_id"],
+                "required": ["restaurantId"],
                 "properties": {
-                  "restaurant_id": {
+                  "restaurantId": {
                     "type": "string",
                     "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                   },
@@ -1288,11 +1288,11 @@
                             "type": "string",
                             "example": "1a2b3c4d"
                           },
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
                           },
-                          "restaurant_id": {
+                          "restaurantId": {
                             "type": "string",
                             "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                           },
@@ -1340,9 +1340,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["restaurant_id"],
+                "required": ["restaurantId"],
                 "properties": {
-                  "restaurant_id": {
+                  "restaurantId": {
                     "type": "string",
                     "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                   }
@@ -1411,15 +1411,15 @@
                             "type": "string",
                             "example": "1a2b3c4d"
                           },
-                          "user_id": {
+                          "userId": {
                             "type": "string",
                             "example": "0a4e5f66-8f32-41f3-98f5-0296c8f7d7bb"
                           },
-                          "restaurant_id": {
+                          "restaurantId": {
                             "type": "string",
                             "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                           },
-                          "created_at": {
+                          "createdAt": {
                             "type": "string",
                             "format": "date-time",
                             "example": "2023-10-01T12:00:00Z"
@@ -1515,9 +1515,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["restaurant_id", "photosBase64"],
+                "required": ["restaurantId", "photosBase64"],
                 "properties": {
-                  "restaurant_id": {
+                  "restaurantId": {
                     "type": "string",
                     "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
                   },

@@ -19,11 +19,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const addRestaurantPhoto = async (req, res) => {
-  const { restaurant_id, photosBase64 } = req.body;
+  const { restaurantId, photosBase64 } = req.body;
   const ownerId = req.user.id;
 
   try {
-    const [rows] = await db.execute('SELECT * FROM Restaurants WHERE id = ? AND owner_id = ?', [restaurant_id, ownerId]);
+    const [rows] = await db.execute('SELECT * FROM Restaurants WHERE id = ? AND ownerId = ?', [restaurantId, ownerId]);
     if (rows.length === 0) {
       return res.status(403).json({
         status: false,
@@ -31,7 +31,7 @@ const addRestaurantPhoto = async (req, res) => {
       });
     }
 
-    const [photoCountRows] = await db.execute('SELECT COUNT(*) as count FROM Restaurant_Photos WHERE restaurant_id = ?', [restaurant_id]);
+    const [photoCountRows] = await db.execute('SELECT COUNT(*) as count FROM Restaurant_Photos WHERE restaurantId = ?', [restaurantId]);
     const photoCount = photoCountRows[0].count;
 
     if (photoCount + photosBase64.length > 3) {
@@ -53,8 +53,8 @@ const addRestaurantPhoto = async (req, res) => {
 
     for (const photoUrl of photoUrls) {
       await db.execute(
-        'INSERT INTO Restaurant_Photos (id, restaurant_id, photo_url) VALUES (?, ?, ?)',
-        [uuidv4(), restaurant_id, photoUrl]
+        'INSERT INTO Restaurant_Photos (id, restaurantId, photoUrl) VALUES (?, ?, ?)',
+        [uuidv4(), restaurantId, photoUrl]
       );
     }
 
@@ -85,9 +85,9 @@ const deleteRestaurantPhoto = async (req, res) => {
         });
       }
   
-      const restaurantId = photoRows[0].restaurant_id;
+      const restaurantId = photoRows[0].restaurantId;
   
-      const [restaurantRows] = await db.execute('SELECT * FROM Restaurants WHERE id = ? AND owner_id = ?', [restaurantId, ownerId]);
+      const [restaurantRows] = await db.execute('SELECT * FROM Restaurants WHERE id = ? AND ownerId = ?', [restaurantId, ownerId]);
       if (restaurantRows.length === 0) {
         return res.status(403).json({
           status: false,
@@ -95,7 +95,7 @@ const deleteRestaurantPhoto = async (req, res) => {
         });
       }
   
-      const photoUrl = photoRows[0].photo_url;
+      const photoUrl = photoRows[0].photoUrl;
       await fs.unlink(photoUrl).catch(err => console.error('Dosya silinirken hata:', err));
   
       await db.execute('DELETE FROM Restaurant_Photos WHERE id = ?', [id]);

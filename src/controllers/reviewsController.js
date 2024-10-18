@@ -3,15 +3,15 @@ const { v4: uuidv4 } = require('uuid');
 
 
 const addReview = async (req, res) => {
-  const { restaurant_id, rating, comment } = req.body;
+  const { restaurantId, rating, comment } = req.body;
   const userId = req.user.id;
 
   try {
     const reviewId = uuidv4();
     await db.execute(
-      `INSERT INTO Reviews (id, user_id, restaurant_id, rating, comment) 
+      `INSERT INTO Reviews (id, userId, restaurantId, rating, comment) 
        VALUES (?, ?, ?, ?, ?)`,
-      [reviewId, userId, restaurant_id, rating, comment]
+      [reviewId, userId, restaurantId, rating, comment]
     );
 
     res.json({
@@ -28,17 +28,17 @@ const addReview = async (req, res) => {
 };
 
 const replyToReview = async (req, res) => {
-    const { review_id, reply } = req.body;
+    const { reviewId, reply } = req.body;
     const userId = req.user.id;
     const replyId = uuidv4();
 
     try {
         const [reviewRows] = await db.execute(
-            `SELECT r.id AS restaurant_id
+            `SELECT r.id AS restaurantId
              FROM Reviews re
-             JOIN Restaurants r ON re.restaurant_id = r.id
-             WHERE re.id = ? AND r.owner_id = ?`,
-            [review_id, userId]
+             JOIN Restaurants r ON re.restaurantId = r.id
+             WHERE re.id = ? AND r.ownerId = ?`,
+            [reviewId, userId]
         );
 
         if (reviewRows.length === 0) {
@@ -49,9 +49,9 @@ const replyToReview = async (req, res) => {
         }
 
         await db.execute(
-            `INSERT INTO Review_Replies (id, review_id, owner_id, reply) 
+            `INSERT INTO Review_Replies (id, reviewId, ownerId, reply) 
              VALUES (?, ?, ?, ?)`,
-            [replyId, review_id, userId, reply]
+            [replyId, reviewId, userId, reply]
         );
 
         res.json({
@@ -69,14 +69,14 @@ const replyToReview = async (req, res) => {
 
 
 const getReviewsForRestaurant = async (req, res) => {
-    const { restaurant_id } = req.body;
+    const { restaurantId } = req.body;
     const page = req.body.page || 1;
     const pageSize = req.body.pageSize || 20;
 
     try {
         const [totalCountRows] = await db.execute(
-            `SELECT COUNT(*) AS totalCount FROM Reviews WHERE restaurant_id = ?`,
-            [restaurant_id]
+            `SELECT COUNT(*) AS totalCount FROM Reviews WHERE restaurantId = ?`,
+            [restaurantId]
         );
         const totalCount = totalCountRows[0].totalCount;
 
@@ -84,10 +84,10 @@ const getReviewsForRestaurant = async (req, res) => {
         const [rows] = await db.execute(
             `SELECT re.*, u.name AS user_name
              FROM Reviews re
-             JOIN Users u ON re.user_id = u.id
-             WHERE re.restaurant_id = ?
+             JOIN Users u ON re.userId = u.id
+             WHERE re.restaurantId = ?
              LIMIT ?, ?`,
-            [restaurant_id, offset, pageSize]
+            [restaurantId, offset, pageSize]
         );
 
         res.json({

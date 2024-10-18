@@ -56,7 +56,7 @@ const authenticateToken = (req, res, next) => {
       }
   
       const [rows] = await db.execute(
-        'SELECT id, name, email, phone_number, role, is_verified FROM Users LIMIT ?, ?', 
+        'SELECT id, name, email, phoneNumber, role, isVerified FROM Users LIMIT ?, ?', 
         [(page - 1) * pageSize, pageSize]
       );
       const [totalCount] = await db.execute('SELECT COUNT(*) as count FROM Users');
@@ -76,15 +76,15 @@ const authenticateToken = (req, res, next) => {
   };
 
   const registerUser = async (req, res) => {
-    const { password, name, surname, email, phone_number, role } = req.body;
+    const { password, name, surname, email, phoneNumber, role } = req.body;
   
     try {
       const hashedPassword = await bcrypt.hash(password, 10);
       const userId = uuidv4();
   
       await db.execute(
-        'INSERT INTO Users (id, name, surname, email, password_hash, phone_number, role) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-        [userId, name, surname, email, hashedPassword, phone_number, role]
+        'INSERT INTO Users (id, name, surname, email, password_hash, phoneNumber, role) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+        [userId, name, surname, email, hashedPassword, phoneNumber, role]
       );
   
       res.json({ 
@@ -101,11 +101,11 @@ const authenticateToken = (req, res, next) => {
   };
 
   const updateUser = async (req, res) => {
-    const { name, surname, phone_number } = req.body;
+    const { name, surname, phoneNumber } = req.body;
     let picturePath = null;
   
     try {
-      const [existingUserRows] = await db.execute('SELECT name, phone_number, email, picture FROM Users WHERE id = ?', [req.user.id]);
+      const [existingUserRows] = await db.execute('SELECT name, phoneNumber, email, picture FROM Users WHERE id = ?', [req.user.id]);
       const existingUser = existingUserRows[0];
   
       if (!existingUser) {
@@ -122,11 +122,11 @@ const authenticateToken = (req, res, next) => {
   
       const newName = name || existingUser.name;
       const newSurname = surname || existingUser.surname;
-      const newPhoneNumber = phone_number || existingUser.phone_number;
+      const newPhoneNumber = phoneNumber || existingUser.phoneNumber;
       const newPicture = picturePath || existingUser.picture;
   
       const [result] = await db.execute(
-        'UPDATE Users SET name = ?, surname = ?, phone_number = ?, picture = ? WHERE id = ?',
+        'UPDATE Users SET name = ?, surname = ?, phoneNumber = ?, picture = ? WHERE id = ?',
         [newName, newSurname, newPhoneNumber, newPicture, req.user.id]
       );
   
@@ -154,7 +154,7 @@ const authenticateToken = (req, res, next) => {
       const userId = req.user.id;
   
       const [rows] = await db.execute(
-        'SELECT id, name, surname, email, phone_number, role, is_verified, picture FROM Users WHERE id = ?', 
+        'SELECT id, name, surname, email, phoneNumber, role, isVerified, picture FROM Users WHERE id = ?', 
         [userId]
       );
   
@@ -174,9 +174,9 @@ const authenticateToken = (req, res, next) => {
           name: user.name,
           surname: user.surname,
           email: user.email,
-          phone_number: user.phone_number,
+          phoneNumber: user.phoneNumber,
           role: user.role,
-          is_verified: user.is_verified,
+          isVerified: user.isVerified,
           picture: user.picture
         }
       });

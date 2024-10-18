@@ -55,7 +55,7 @@ const loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, is_verified: user.is_verified }, 
+      { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
       'secret_key', 
       { expiresIn: '1h' }
     );
@@ -66,9 +66,9 @@ const loginUser = async (req, res) => {
         id: user.id,
         email: user.email,
         name: user.name,
-        phone_number: user.phone_number,
+        phoneNumber: user.phoneNumber,
         role: user.role,
-        is_verified: user.is_verified,
+        isVerified: user.isVerified,
         token: token
       }
     });
@@ -99,7 +99,7 @@ const refreshToken = async (req, res) => {
       }
 
       const newToken = jwt.sign(
-        { id: user.id, email: user.email, role: user.role, is_verified: user.is_verified }, 
+        { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
         'secret_key', 
         { expiresIn: '1h' }
       );
