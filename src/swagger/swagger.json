@@ -657,6 +657,10 @@
                     "type": "string",
                     "example": "Lezzet Durağı"
                   },
+                  "description": {
+                    "type": "string",
+                    "example": "Lezzet Durağı hakkında bilgi"
+                  },
                   "address": {
                     "type": "string",
                     "example": "İstanbul, Türkiye"
@@ -751,6 +755,10 @@
                   "name": {
                     "type": "string",
                     "example": "Lezzet Durağı"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Lezzet Durağı hakkında bilgi"
                   },
                   "address": {
                     "type": "string",
