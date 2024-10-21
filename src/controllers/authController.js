@@ -57,7 +57,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
       'secret_key', 
-      { expiresIn: '1h' }
+      { expiresIn: '2h' }
     );
 
     const refreshToken = jwt.sign(
@@ -119,7 +119,7 @@ const refreshToken = async (req, res) => {
           const newAccessToken = jwt.sign(
             { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
             'secret_key', 
-            { expiresIn: '1h' }
+            { expiresIn: '2h' } 
           );
 
           return res.json({ 

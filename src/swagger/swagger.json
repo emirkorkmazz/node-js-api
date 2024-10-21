@@ -717,10 +717,6 @@
                     "type": "string",
                     "example": "+905555555555"
                   },
-                  "menu": {
-                    "type": "string",
-                    "example": "Menü bilgileri burada yer alır."
-                  },
                   "logoBase64": {
                     "type": "string",
                     "description": "Restoran logosu, base64 formatında"
@@ -815,10 +811,6 @@
                   "contact": {
                     "type": "string",
                     "example": "+905555555555"
-                  },
-                  "menu": {
-                    "type": "string",
-                    "example": "Güncellenmiş menü bilgileri burada yer alır."
                   },
                   "logoBase64": {
                     "type": "string",

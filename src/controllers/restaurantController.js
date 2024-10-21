@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const addRestaurant = async (req, res) => {
-  const { name, description, address, contact, menu, city, district, latitude, longitude, logoBase64 } = req.body; 
+  const { name, description, address, contact, city, district, latitude, longitude, logoBase64 } = req.body; 
 
   try {
     const restaurantId = uuidv4();
@@ -40,9 +40,9 @@ const addRestaurant = async (req, res) => {
     }
 
     await db.execute(
-      `INSERT INTO Restaurants (id, name, description, address, contact, menu, logoUrl, ownerId, isApproved, city, district, latitude, longitude)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [restaurantId, name, description, address, contact, menu, logoPath, ownerId, isApproved, city, district, latitude, longitude]
+      `INSERT INTO Restaurants (id, name, description, address, contact, logoUrl, ownerId, isApproved, city, district, latitude, longitude)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [restaurantId, name, description, address, contact, logoPath, ownerId, isApproved, city, district, latitude, longitude]
     );
 
     res.json({
@@ -61,7 +61,7 @@ const addRestaurant = async (req, res) => {
 
 
 const updateRestaurant = async (req, res) => {
-  const { id, name, description, address, contact, menu, city, district, latitude, longitude, logoBase64 } = req.body;
+  const { id, name, description, address, contact, city, district, latitude, longitude, logoBase64 } = req.body;
   const ownerId = req.user.id;
 
   try {
@@ -82,8 +82,8 @@ const updateRestaurant = async (req, res) => {
     }
 
     await db.execute(
-      `UPDATE Restaurants SET name = ?, description = ?, address = ?, contact = ?, menu = ?, logoUrl = ?, city = ?, district = ?, latitude = ?, longitude = ? WHERE id = ?`,
-      [name || rows[0].name, description || rows[0].description, address || rows[0].address, contact || rows[0].contact, menu || rows[0].menu, logoPath, city || rows[0].city, district || rows[0].district, latitude || rows[0].latitude, longitude || rows[0].longitude, id]
+      `UPDATE Restaurants SET name = ?, description = ?, address = ?, contact = ?, logoUrl = ?, city = ?, district = ?, latitude = ?, longitude = ? WHERE id = ?`,
+      [name || rows[0].name, description || rows[0].description, address || rows[0].address, contact || rows[0].contact, logoPath, city || rows[0].city, district || rows[0].district, latitude || rows[0].latitude, longitude || rows[0].longitude, id]
     );
 
     res.json({
