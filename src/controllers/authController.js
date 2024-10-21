@@ -60,6 +60,12 @@ const loginUser = async (req, res) => {
       { expiresIn: '1h' }
     );
 
+    const refreshToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified },
+      'refresh_secret_key',
+      { expiresIn: '7d' }
+    );
+
     res.json({
       status: true,
       user: {
@@ -69,7 +75,8 @@ const loginUser = async (req, res) => {
         phoneNumber: user.phoneNumber,
         role: user.role,
         isVerified: user.isVerified,
-        token: token
+        token: token,
+        refreshToken: refreshToken
       }
     });
   } catch (error) {
@@ -81,37 +88,51 @@ const loginUser = async (req, res) => {
   }
 };
 
+
 const refreshToken = async (req, res) => {
-  const { token } = req.body;
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).json({ 
+      status: false,
+      message: 'Refresh token gereklidir.' 
+    });
+  }
 
   try {
-    jwt.verify(token, 'secret_key', async (err, decoded) => {
-      if (err) return res.status(403).json({ message: 'Token geçersiz veya süresi dolmuş.' });
-
-      const [rows] = await db.execute('SELECT * FROM Users WHERE id = ?', [decoded.id]);
-      const user = rows[0];
-
-      if (!user) {
-        return res.status(404).json({ 
+    jwt.verify(refreshToken, 'refresh_secret_key', async (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ 
           status: false,
-          message: 'Kullanıcı bulunamadı.' 
+          message: 'Refresh token geçersiz veya süresi dolmuş.' 
         });
+      } else {
+        const [rows] = await db.execute('SELECT * FROM Users WHERE id = ?', [decoded.id]);
+        const user = rows[0];
+
+        if (!user) {
+          return res.status(404).json({ 
+            status: false,
+            message: 'Kullanıcı bulunamadı.' 
+          });
+        } else {
+          const newAccessToken = jwt.sign(
+            { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
+            'secret_key', 
+            { expiresIn: '1h' }
+          );
+
+          return res.json({ 
+            status: true,
+            token: newAccessToken,
+            refreshToken: refreshToken
+          });
+        }
       }
-
-      const newToken = jwt.sign(
-        { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
-        'secret_key', 
-        { expiresIn: '1h' }
-      );
-
-      res.json({ 
-        status: true,
-        token: newToken 
-      });
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ 
+    return res.status(500).json({ 
       status: false,
       message: 'Token yenileme sırasında bir hata oluştu.' 
     });

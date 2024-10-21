@@ -234,9 +234,9 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "token": {
-                      "type": "string",
-                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    "status": {
+                      "type": "boolean",
+                      "example": true
                     },
                     "user": {
                       "type": "object",
@@ -264,6 +264,14 @@
                         "isVerified": {
                           "type": "boolean",
                           "example": true
+                        },
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "refreshToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                         }
                       }
                     }
@@ -526,9 +534,9 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["token"],
+                "required": ["refreshToken"],
                 "properties": {
-                  "token": {
+                  "refreshToken": {
                     "type": "string",
                     "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                   }
@@ -558,8 +566,8 @@
               }
             }
           },
-          "403": {
-            "description": "Geçersiz veya süresi dolmuş token",
+          "400": {
+            "description": "Refresh token eksik",
             "content": {
               "application/json": {
                 "schema": {
@@ -571,7 +579,47 @@
                     },
                     "message": {
                       "type": "string",
-                      "example": "Token geçersiz veya süresi dolmuş."
+                      "example": "Refresh token gereklidir."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Geçersiz veya süresi dolmuş refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Refresh token geçersiz veya süresi dolmuş."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Kullanıcı bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Kullanıcı bulunamadı."
                     }
                   }
                 }
