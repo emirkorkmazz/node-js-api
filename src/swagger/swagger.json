@@ -1727,6 +1727,314 @@
           }
         }
       }
+    },
+    "/api/menu/upload": {
+  "post": {
+    "summary": "Restoran menüsü yükleme",
+    "tags": ["Menu"],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["restaurantId"],
+            "properties": {
+              "restaurantId": {
+                "type": "string",
+                "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+              },
+              "menu1": {
+                "type": "string",
+                "description": "Base64 formatında menü resmi"
+              },
+              "menu2": {
+                "type": "string",
+                "description": "Base64 formatında menü resmi"
+              },
+              "menu3": {
+                "type": "string",
+                "description": "Base64 formatında menü resmi"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Menü resimleri başarıyla yüklendi",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Menü resimleri başarıyla yüklendi."
+                },
+                "updatedMenus": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "/images/restaurant-menu/menu1.png",
+                    "/images/restaurant-menu/menu2.png",
+                    "/images/restaurant-menu/menu3.png"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Geçersiz istek",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "En az bir menü resmi göndermelisiniz."
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Yetkilendirme başarısız",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Yetkilendirme başarısız: Token bulunamadı."
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Yetkisiz erişim",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bu restorana menü ekleme yetkiniz yok."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Sunucu hatası",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Menü yüklenirken bir hata oluştu."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+    },
+    "/api/menu/delete": {
+  "delete": {
+    "summary": "Restoran menüsü silme",
+    "tags": ["Menu"],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["restaurantId", "menuNumber"],
+            "properties": {
+              "restaurantId": {
+                "type": "string",
+                "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+              },
+              "menuNumber": {
+                "type": "string",
+                "enum": ["menu1", "menu2", "menu3"],
+                "example": "menu2"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Menü resmi başarıyla silindi",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "menu2 başarıyla silindi."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Geçersiz istek",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Geçersiz menü numarası. menu1, menu2 veya menu3 olmalıdır."
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Yetkilendirme başarısız",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Yetkilendirme başarısız: Token bulunamadı."
+                }
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Yetkisiz erişim",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bu restoranın menüsünü silme yetkiniz yok."
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Restoran bulunamadı veya menü güncellenemedi",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Restoran bulunamadı veya menü güncellenemedi."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Sunucu hatası",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Menü silinirken bir hata oluştu."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
     }
    
   }

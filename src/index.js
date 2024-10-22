@@ -9,6 +9,7 @@ const restaurantRoutes = require('./routes/restaurantRoutes');
 const reviewsRoutes = require('./routes/reviewsRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const photoRoutes = require('./routes/photoRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
@@ -22,7 +23,7 @@ app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api', authRoutes, userRoutes, restaurantRoutes, reviewsRoutes, favoriteRoutes, photoRoutes);
+app.use('/api', authRoutes, userRoutes, restaurantRoutes, reviewsRoutes, favoriteRoutes, photoRoutes, menuRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
