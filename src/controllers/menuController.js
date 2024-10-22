@@ -150,7 +150,43 @@ const deleteMenu = async (req, res) => {
     }
   };
 
+  const getRestaurantPhotos = async (req, res) => {
+    const { restaurantId } = req.body;
+    const ownerId = req.user.id;
+  
+    try {
+      const [ownerRows] = await db.execute('SELECT * FROM Restaurants WHERE id = ? AND ownerId = ?', [restaurantId, ownerId]);
+      if (ownerRows.length === 0) {
+        return res.status(403).json({
+          status: false,
+          message: 'Bu restorana ait fotoğrafları görüntüleme yetkiniz yok.'
+        });
+      }
+  
+      const [menuRows] = await db.execute('SELECT menu1, menu2, menu3 FROM Restaurants WHERE id = ?', [restaurantId]);
+  
+      if (menuRows.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: 'Restoran bulunamadı.'
+        });
+      }
+
+      res.json({
+        status: true,
+        menus: menuRows[0]
+      });
+    } catch (error) {
+      console.error('Menü bilgileri alınırken hata:', error);
+      res.status(500).json({
+        status: false,
+        message: 'Menü bilgileri alınırken bir hata oluştu.'
+      });
+    }
+  };
+
 module.exports = {
   uploadMenu,
-  deleteMenu
+  deleteMenu,
+  getRestaurantPhotos
 };

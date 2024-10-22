@@ -2035,6 +2035,86 @@
       }
     }
   }
+    },
+    "/api/menu/photos": {
+      "post": {
+        "summary": "Restoran fotoğraflarını al",
+        "tags": ["Menu"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["restaurantId"],
+                "properties": {
+                  "restaurantId": {
+                    "type": "string",
+                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fotoğraflar başarıyla getirildi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "photos": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1a2b3c4d"
+                          },
+                          "restaurantId": {
+                            "type": "string",
+                            "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                          },
+                          "photoUrl": {
+                            "type": "string",
+                            "example": "images/restaurant-menu/photo1.jpg"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-10-01T12:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Yetkilendirme başarısız: Kullanıcı bu restorana ait fotoğrafları görüntüleme yetkisine sahip değil"
+          },
+          "404": {
+            "description": "Bu restorana ait fotoğraf bulunamadı"
+          },
+          "500": {
+            "description": "Sunucu hatası"
+          }
+        }
+      }
     }
    
   }
