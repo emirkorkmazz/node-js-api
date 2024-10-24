@@ -272,6 +272,10 @@
                         "refreshToken": {
                           "type": "string",
                           "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "restaurantId": {
+                          "type": "string",
+                          "example": "1a2b3c4d"
                         }
                       }
                     }

@@ -32,6 +32,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
@@ -66,6 +67,15 @@ const loginUser = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    let restaurantId = null;
+
+    if (user.role === 'BusinessOwner') {
+      const [restaurantRows] = await db.execute('SELECT id FROM Restaurants WHERE ownerId = ?', [user.id]);
+      if (restaurantRows.length > 0) {
+        restaurantId = restaurantRows[0].id;
+      }
+    }
+
     res.json({
       status: true,
       user: {
@@ -76,7 +86,8 @@ const loginUser = async (req, res) => {
         role: user.role,
         isVerified: user.isVerified,
         token: token,
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
+        restaurantId: restaurantId
       }
     });
   } catch (error) {
