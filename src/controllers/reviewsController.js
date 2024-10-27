@@ -83,7 +83,7 @@ const getReviewsForRestaurant = async (req, res) => {
         const offset = (page - 1) * pageSize;
         const [rows] = await db.execute(
             `SELECT re.*, u.name AS userName, u.surname AS userSurname,
-                    CASE WHEN rr.id IS NOT NULL THEN TRUE ELSE FALSE END AS isReviewReply
+                    IF(rr.id IS NOT NULL, 'true', 'false') AS isReviewReply
              FROM Reviews re
              JOIN Users u ON re.userId = u.id
              LEFT JOIN Review_Replies rr ON re.id = rr.reviewId
@@ -92,10 +92,20 @@ const getReviewsForRestaurant = async (req, res) => {
             [restaurantId, offset, pageSize]
         );
 
+        const formattedRows = rows.map(row => ({
+            ...row,
+            isReviewReply: row.isReviewReply === 'true',
+            createdAt: new Date(row.createdAt).toLocaleDateString('tr-TR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            })
+        }));
+
         res.json({
             status: true,
             totalCount: totalCount,
-            reviews: rows
+            reviews: formattedRows
         });
     } catch (error) {
         console.error(error);
