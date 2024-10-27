@@ -7,6 +7,6 @@ router.post('/review/add', authenticateToken, reviewsController.addReview);
 
 router.post('/review/reply', authenticateToken, reviewsController.replyToReview);
 
-router.post('/review/restaurant', authenticateToken, reviewsController.getReviewsForRestaurant);
+router.post('/review/restaurant', reviewsController.getReviewsForRestaurant);
 
 module.exports = router;

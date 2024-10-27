@@ -82,9 +82,11 @@ const getReviewsForRestaurant = async (req, res) => {
 
         const offset = (page - 1) * pageSize;
         const [rows] = await db.execute(
-            `SELECT re.*, u.name AS user_name
+            `SELECT re.*, u.name AS userName, u.surname AS userSurname,
+                    CASE WHEN rr.id IS NOT NULL THEN TRUE ELSE FALSE END AS isReviewReply
              FROM Reviews re
              JOIN Users u ON re.userId = u.id
+             LEFT JOIN Review_Replies rr ON re.id = rr.reviewId
              WHERE re.restaurantId = ?
              LIMIT ?, ?`,
             [restaurantId, offset, pageSize]
