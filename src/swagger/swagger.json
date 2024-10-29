@@ -690,186 +690,222 @@
       }
     },
     "/api/restaurant/add": {
-      "post": {
-        "summary": "Restoran ekleme",
-        "tags": ["Restaurant"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "example": "Lezzet Durağı"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Lezzet Durağı hakkında bilgi"
-                  },
-                  "address": {
-                    "type": "string",
-                    "example": "İstanbul, Türkiye"
-                  },
-                  "contact": {
-                    "type": "string",
-                    "example": "+905555555555"
-                  },
-                  "logoBase64": {
-                    "type": "string",
-                    "description": "Restoran logosu, base64 formatında"
-                  },
-                  "city": {
-                    "type": "string",
-                    "example": "İstanbul"
-                  },
-                  "district": {
-                    "type": "string",
-                    "example": "Kadıköy"
-                  },
-                  "latitude": {
-                    "type": "number",
-                    "example": 40.123456
-                  },
-                  "longitude": {
-                    "type": "number",
-                    "example": 29.123456
-                  }
-                }
+  "post": {
+    "summary": "Restoran ekleme",
+    "tags": ["Restaurant"],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["name", "description", "address", "contact", "city", "district", "latitude", "longitude"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Lezzet Durağı"
+              },
+              "description": {
+                "type": "string",
+                "example": "Lezzet Durağı hakkında bilgi"
+              },
+              "address": {
+                "type": "string",
+                "example": "İstanbul, Türkiye"
+              },
+              "contact": {
+                "type": "string",
+                "example": "+905555555555"
+              },
+              "logoBase64": {
+                "type": "string",
+                "description": "Base64 formatında logo"
+              },
+              "city": {
+                "type": "string",
+                "example": "İstanbul"
+              },
+              "district": {
+                "type": "string",
+                "example": "Kadıköy"
+              },
+              "latitude": {
+                "type": "number",
+                "example": 40.123456
+              },
+              "longitude": {
+                "type": "number",
+                "example": 29.123456
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Restoran başarıyla eklendi",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Restoran başarıyla eklendi!"
-                    },
-                    "restaurantId": {
-                      "type": "string",
-                      "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Yetkilendirme başarısız: Token bulunamadı"
-          },
-          "500": {
-            "description": "Restoran eklenirken bir hata oluştu"
           }
         }
       }
     },
+    "responses": {
+      "200": {
+        "description": "Restoran başarıyla eklendi",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Restoran başarıyla eklendi!"
+                },
+                "restaurantId": {
+                  "type": "string",
+                  "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+                }
+              }
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Yetkilendirme başarısız: Token bulunamadı"
+      },
+      "500": {
+        "description": "Restoran eklenirken bir hata oluştu"
+      }
+    }
+  }
+    },
     "/api/restaurant/update": {
-      "post": {
-        "summary": "Restoran güncelleme",
-        "tags": ["Restaurant"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
-                  },
-                  "name": {
-                    "type": "string",
-                    "example": "Lezzet Durağı"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Lezzet Durağı hakkında bilgi"
-                  },
-                  "address": {
-                    "type": "string",
-                    "example": "İstanbul, Türkiye"
-                  },
-                  "contact": {
-                    "type": "string",
-                    "example": "+905555555555"
-                  },
-                  "logoBase64": {
-                    "type": "string",
-                    "description": "Restoran logosu, base64 formatında"
-                  },
-                  "city": {
-                    "type": "string",
-                    "example": "İstanbul"
-                  },
-                  "district": {
-                    "type": "string",
-                    "example": "Kadıköy"
-                  },
-                  "latitude": {
-                    "type": "number",
-                    "example": 40.123456
-                  },
-                  "longitude": {
-                    "type": "number",
-                    "example": 29.123456
-                  }
-                }
+  "post": {
+    "summary": "Restoran güncelleme",
+    "tags": ["Restaurant"],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["id"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "f3b9f72d-6f2d-4c83-93a7-12e5a8c6b6bb"
+              },
+              "name": {
+                "type": "string",
+                "example": "Lezzet Durağı"
+              },
+              "description": {
+                "type": "string",
+                "example": "Lezzet Durağı hakkında bilgi"
+              },
+              "address": {
+                "type": "string",
+                "example": "İstanbul, Türkiye"
+              },
+              "contact": {
+                "type": "string",
+                "example": "+905555555555"
+              },
+              "logoBase64": {
+                "type": "string",
+                "description": "Base64 formatında logo"
+              },
+              "city": {
+                "type": "string",
+                "example": "İstanbul"
+              },
+              "district": {
+                "type": "string",
+                "example": "Kadıköy"
+              },
+              "latitude": {
+                "type": "number",
+                "example": 40.123456
+              },
+              "longitude": {
+                "type": "number",
+                "example": 29.123456
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Restoran başarıyla güncellendi",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Restoran başarıyla güncellendi!"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Restoran bulunamadı veya yetkiniz yok"
-          },
-          "500": {
-            "description": "Restoran güncellenirken bir hata oluştu"
           }
         }
       }
+    },
+    "responses": {
+      "200": {
+        "description": "Restoran başarıyla güncellendi",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Restoran başarıyla güncellendi!"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Restoran bulunamadı veya yetkiniz yok",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Restoran bulunamadı veya yetkiniz yok."
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Restoran güncellenirken bir hata oluştu",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Restoran güncellenirken bir hata oluştu."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
     },
     "/api/restaurant/delete": {
       "delete": {

@@ -59,9 +59,8 @@ const addRestaurant = async (req, res) => {
   }
 };
 
-
 const updateRestaurant = async (req, res) => {
-  const { id, name, description, address, contact, city, district, latitude, longitude, logoBase64 } = req.body;
+  const { id } = req.body;
   const ownerId = req.user.id;
 
   try {
@@ -73,18 +72,52 @@ const updateRestaurant = async (req, res) => {
       });
     }
 
-    let logoPath = rows[0].logoUrl;
-    if (logoBase64) {
-      const base64Data = logoBase64.replace(/^data:image\/\w+;base64,/, "");
+    const currentRestaurant = rows[0];
+    let logoPath = currentRestaurant.logoUrl;
+
+    if (req.body.logoBase64) {
+      const base64Data = req.body.logoBase64.replace(/^data:image\/\w+;base64,/, "");
       const buffer = Buffer.from(base64Data, 'base64');
       logoPath = `images/restaurants-logos/${id}.png`;
       await fs.writeFile(logoPath, buffer);
     }
 
-    await db.execute(
-      `UPDATE Restaurants SET name = ?, description = ?, address = ?, contact = ?, logoUrl = ?, city = ?, district = ?, latitude = ?, longitude = ? WHERE id = ?`,
-      [name || rows[0].name, description || rows[0].description, address || rows[0].address, contact || rows[0].contact, logoPath, city || rows[0].city, district || rows[0].district, latitude || rows[0].latitude, longitude || rows[0].longitude, id]
-    );
+    const updateFields = [];
+    const updateValues = [];
+
+    const fieldsToUpdate = {
+      name: req.body.name,
+      description: req.body.description,
+      address: req.body.address,
+      contact: req.body.contact,
+      city: req.body.city,
+      district: req.body.district,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude
+    };
+
+    if (logoPath !== currentRestaurant.logoUrl) {
+      fieldsToUpdate.logoUrl = logoPath;
+    }
+
+    for (const [key, value] of Object.entries(fieldsToUpdate)) {
+      if (value !== undefined && value !== null) {
+        updateFields.push(`${key} = ?`);
+        updateValues.push(value);
+      }
+    }
+
+    if (updateFields.length === 0) {
+      return res.json({
+        status: true,
+        message: 'Güncellenecek veri bulunamadı.'
+      });
+    }
+
+    const query = `UPDATE Restaurants SET ${updateFields.join(', ')} WHERE id = ? AND ownerId = ?`;
+    updateValues.push(id, ownerId);
+
+    await db.execute(query, updateValues);
 
     res.json({
       status: true,
