@@ -19,7 +19,7 @@ const authenticateToken = (req, res, next) => {
     message: 'Yetkilendirme başarısız: Token bulunamadı.' 
   });
 
-  jwt.verify(token, 'secret_key', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
       console.log('Token verification error:', err); 
       return res.status(403).json({ 
@@ -57,13 +57,13 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
-      'secret_key', 
+      process.env.JWT_SECRET_KEY, 
       { expiresIn: '2h' }
     );
 
     const refreshToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified },
-      'refresh_secret_key',
+      process.env.REFRESH_JWT_SECRET_KEY,
       { expiresIn: '7d' }
     );
 
@@ -111,7 +111,7 @@ const refreshToken = async (req, res) => {
   }
 
   try {
-    jwt.verify(refreshToken, 'refresh_secret_key', async (err, decoded) => {
+    jwt.verify(refreshToken, process.env.REFRESH_JWT_SECRET_KEY, async (err, decoded) => {
       if (err) {
         return res.status(403).json({ 
           status: false,
@@ -129,7 +129,7 @@ const refreshToken = async (req, res) => {
         } else {
           const newAccessToken = jwt.sign(
             { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified }, 
-            'secret_key', 
+            process.env.JWT_SECRET_KEY, 
             { expiresIn: '2h' } 
           );
 
