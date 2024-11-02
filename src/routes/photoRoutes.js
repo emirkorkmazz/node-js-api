@@ -7,4 +7,6 @@ router.post('/photo/add', authenticateToken, photoController.upload.single('phot
 
 router.delete('/photo/delete', authenticateToken, photoController.deleteRestaurantPhoto);
 
+router.post('/photo/restaurant', authenticateToken, photoController.getRestaurantPhotos);
+
 module.exports = router;

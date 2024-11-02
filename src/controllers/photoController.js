@@ -113,8 +113,67 @@ const deleteRestaurantPhoto = async (req, res) => {
     }
   };
 
+  const getRestaurantPhotos = async (req, res) => {
+    const { restaurantId } = req.body;
+    const userId = req.user.id;
+  
+    try {
+      // Önce restoranın var olup olmadığını ve kullanıcının yetkisini kontrol edelim
+      const [restaurantRows] = await db.execute(
+        `SELECT ownerId FROM Restaurants WHERE id = ?`,
+        [restaurantId]
+      );
+  
+      if (restaurantRows.length === 0) {
+        return res.status(404).json({
+          status: false,
+          message: 'Restoran bulunamadı.'
+        });
+      }
+  
+      // Eğer kullanıcı restoran sahibi değilse ve rolü BusinessOwner ise erişimi engelle
+      if (req.user.role === 'BusinessOwner' && restaurantRows[0].ownerId !== userId) {
+        return res.status(403).json({
+          status: false,
+          message: 'Bu restoranın fotoğraflarını görüntüleme yetkiniz yok.'
+        });
+      }
+  
+      const [rows] = await db.execute(
+        `SELECT id, photoUrl, createdAt 
+         FROM Restaurant_Photos 
+         WHERE restaurantId = ?
+         ORDER BY createdAt DESC`,
+        [restaurantId]
+      );
+  
+      // Tarihleri formatla
+      const formattedPhotos = rows.map(photo => ({
+        ...photo,
+        createdAt: new Date(photo.createdAt).toLocaleDateString('tr-TR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
+      }));
+  
+      res.json({
+        status: true,
+        photos: formattedPhotos
+      });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: false,
+        message: 'Fotoğraflar getirilirken bir hata oluştu.'
+      });
+    }
+  };
+
 module.exports = {
   upload,
   addRestaurantPhoto,
-  deleteRestaurantPhoto
+  deleteRestaurantPhoto,
+  getRestaurantPhotos
 };
