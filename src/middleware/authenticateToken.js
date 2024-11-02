@@ -11,7 +11,7 @@ const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, 'secret_key', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(403).json({ 
         status: false,

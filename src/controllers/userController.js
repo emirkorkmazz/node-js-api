@@ -18,7 +18,7 @@ const authenticateToken = (req, res, next) => {
       message: 'Yetkilendirme başarısız: Token bulunamadı.' 
     });
   
-    jwt.verify(token, 'secret_key', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
       if (err) {
         console.log('Token verification error:', err); 
         return res.status(403).json({ 
